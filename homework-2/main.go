@@ -11,11 +11,11 @@ func main() {
 
 func getUserInput() (float64) {
 	var userInput float64
-	fmt.Print("Введите ваше значение"
+	fmt.Print("Введите ваше значение")
 	fmt.Scan(&userInput)
 	return userInput
 }
 
-func calculatUserInfo (int, str, str) (result float64) {
+func calculatUserInfo(amount float64, fromCurrency string, toCurrency string) (result float64) {
 
 }
