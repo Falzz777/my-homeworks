@@ -7,10 +7,22 @@ import (
 
 func main() {
 	for {
-		amount, fromCurrency, toCurrency := getUserInput()
-		err := checkError(amount, fromCurrency, toCurrency)
+		amount := getAmount()
+		err := checkError(amount)
 		if err != nil {
-			fmt.Println("Введите правильные значения!!!")
+			fmt.Println("Ошибка:", err)
+			continue
+		}
+		fromCurrency := getFromCurrency()
+		err = checkErrorValidFromCurrency(fromCurrency)
+		if err != nil {
+			fmt.Println("Ошибка:", err)
+			continue
+		}
+		toCurrency := getToCurrency()
+		err = checkErrorValidToCurrency(toCurrency)
+		if err != nil {
+			fmt.Println("Ошибка:", err)
 			continue
 		}
 		result := calculatUserInfo(amount, fromCurrency, toCurrency)
@@ -22,20 +34,28 @@ func main() {
 	}
 }
 
-func getUserInput() (float64, string,  string) {
-	var amount float64
-	var fromCurrency string
+func getToCurrency() string {
 	var toCurrency string
-	fmt.Print("Введите вашу исходную валюту(USD, EUR, RUB): ")
-	fmt.Scan(&fromCurrency)
-	fmt.Print("Введите ваше значение: ")
-	fmt.Scan(&amount)
 	fmt.Print("Введите вашу целевую валюту(USD, EUR, RUB): ")
 	fmt.Scan(&toCurrency)
-	return amount, fromCurrency, toCurrency
+	return toCurrency
 }
 
-func calculatUserInfo(amount float64, fromCurrency string, toCurrency string) (float64) {
+func getAmount () float64 {
+	var amount float64
+	fmt.Print("Введите ваше значение: ")
+	fmt.Scan(&amount)
+	return amount
+}	
+
+func getFromCurrency() string{
+	var fromCurrency string
+	fmt.Print("Введите вашу исходную валюту(USD, EUR, RUB): ")
+	fmt.Scan(&fromCurrency)
+	return fromCurrency
+}
+
+func calculatUserInfo(amount float64, fromCurrency string, toCurrency string) float64 {
 	switch {
 		case fromCurrency == "USD" && toCurrency == "EUR":
 			return amount * 0.85
@@ -52,7 +72,7 @@ func calculatUserInfo(amount float64, fromCurrency string, toCurrency string) (f
  	}
 }
 
-func checkRepeatCalculation() (bool) {
+func checkRepeatCalculation() bool {
 	var userChoise string
 	fmt.Print("Вы хотите сделать еще расчёт (y/n)")
 	fmt.Scan(&userChoise)
@@ -63,9 +83,34 @@ func checkRepeatCalculation() (bool) {
 }
 
 
-func checkError (amount float64, fromCurrency string, toCurrency string) (error) {
-	if amount <= 0 || fromCurrency == "" || toCurrency == ""{
-		return errors.New("")
+func checkError(amount float64) error {
+    // Проверка суммы
+    if amount <= 0 {
+        return errors.New("сумма должна быть больше 0")
 	}
+    return nil
+}
+
+func checkErrorValidFromCurrency(fromCurrency string) error {
+    if !isValidCurrency(fromCurrency) {
+        return errors.New("неверная исходная валюта (доступны: USD, EUR, RUB)")
+    }
 	return nil
+}
+
+func checkErrorValidToCurrency(toCurrency string) error {
+    if !isValidCurrency(toCurrency) {
+        return errors.New("неверная целевая валюта (доступны: USD, EUR, RUB)")
+    }
+	return nil
+}
+
+func isValidCurrency(currency string) bool {
+    validCurrencies := []string{"USD", "EUR", "RUB"}
+    for _, valid := range validCurrencies {
+        if currency == valid {
+            return true
+        }
+    }
+    return false
 }
